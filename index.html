@@ -2283,13 +2283,13 @@
 
   // ── ROUTING ──
   const routes = {
-    '/': 'main',
-    '/privacy': 'privacy',
-    '/terms': 'terms',
-    '/report': 'report'
+    '': 'main',
+    'privacy': 'privacy',
+    'terms': 'terms',
+    'report': 'report'
   };
 
-  function showSection(id, push = true, path = null) {
+  function showSection(id, push = true, hash = '') {
     document.getElementById('main-content').style.display = 'none';
     document.querySelectorAll('.legal-section').forEach(s => s.classList.remove('active'));
     document.getElementById('report').style.display = 'none';
@@ -2302,14 +2302,14 @@
       document.getElementById('report').style.display = 'block';
     }
 
-    if (push && path) {
-      window.history.pushState({ sectionId: id }, '', path);
+    if (push) {
+      window.location.hash = hash;
     }
     
     // Scroll handling
-    if (path && path.includes('#')) {
-      const hash = path.split('#')[1];
-      const el = document.getElementById(hash);
+    if (hash && hash.includes('#') && hash.split('#').length > 2) {
+      const anchor = hash.split('#')[2];
+      const el = document.getElementById(anchor);
       if (el) {
         setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 10);
       }
@@ -2321,31 +2321,34 @@
   function handleLinkClick(e, path, sectionId) {
     if (path.startsWith('http')) return;
     e.preventDefault();
-    showSection(sectionId, true, path);
+    const hash = path.startsWith('/') ? '#' + path.substring(1) : '#' + path;
+    showSection(sectionId, true, hash);
   }
 
-  window.onpopstate = (event) => {
-    const path = window.location.pathname;
-    const sectionId = routes[path] || 'main';
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash.substring(1) || '';
+    const route = hash.split('#')[0];
+    const sectionId = routes[route] || 'main';
     showSection(sectionId, false);
-  };
+  });
 
   // Initial load
   (function() {
-    const path = window.location.pathname;
-    const sectionId = routes[path] || 'main';
-    // Use timeout to ensure DOM is fully ready for potential anchor scrolling
+    const hash = window.location.hash.substring(1) || '';
+    const route = hash.split('#')[0];
+    const sectionId = routes[route] || 'main';
     setTimeout(() => {
       showSection(sectionId, false);
-      if (window.location.hash) {
-        const el = document.querySelector(window.location.hash);
+      if (hash.includes('#') && hash.split('#').length > 1) {
+        const anchor = hash.split('#')[1];
+        const el = document.getElementById(anchor);
         if (el) el.scrollIntoView();
       }
     }, 0);
   })();
 
   // ── LEGACY WRAPPERS (for any missed calls) ──
-  function showMain() { showSection('main', true, '/'); }
+  function showMain() { showSection('main', true, ''); }
 
   // ── HOW IT WORKS STEPS ──
   function setStep(el, idx) {
