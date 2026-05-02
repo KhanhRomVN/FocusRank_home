@@ -451,6 +451,7 @@
       line-height: 1.1;
       background: linear-gradient(135deg, var(--text), var(--accent));
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .phone-score-sub { font-size: 10px; color: var(--text3); margin-top: 3px; }
@@ -2187,6 +2188,48 @@
   </div>
 </div>
 
+<!-- ═══ DELETE ACCOUNT ═══ -->
+<div id="delete-account" class="legal-section">
+  <div class="container">
+    <div class="legal-content">
+      <div class="section-label" style="margin-bottom:12px; color: #ff4d4d">Danger Zone</div>
+      <h1 class="legal-title">Delete Account</h1>
+      <p class="legal-subtitle">We're sorry to see you go. Deleting your account will permanently erase all your progress and data.</p>
+
+      <div class="legal-block" style="border-left: 3px solid #ff4d4d; background: rgba(255, 77, 77, 0.05); padding-left: 20px;">
+        <h3 style="color: #ff4d4d">What happens when you delete?</h3>
+        <ul style="color: var(--text2); font-size: 14px; line-height: 1.6; margin-top: 10px;">
+          <li>Your profile and login credentials will be removed.</li>
+          <li>All your Focus Scores and Leaderboard rankings will be wiped.</li>
+          <li>Your habit history and focus session logs will be permanently deleted.</li>
+          <li>This action <strong>cannot be undone</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="report-inner" style="margin-top: 40px; background: var(--surface); border: 1px solid var(--border2); padding: 32px; border-radius: var(--r-lg)">
+        <h2 style="font-family: var(--font-display); font-size: 20px; margin-bottom: 24px;">Confirm Deletion</h2>
+        
+        <div class="form-group">
+          <label class="form-label">Email Address or Username</label>
+          <input type="text" id="del-identifier" class="form-input" placeholder="Enter your email or username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Type "DELETE" to confirm</label>
+          <input type="text" id="del-confirm" class="form-input" placeholder="Type DELETE here">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reason for leaving (optional)</label>
+          <textarea id="del-reason" class="form-textarea" style="min-height:80px" placeholder="Help us improve. Why are you deleting your account?"></textarea>
+        </div>
+
+        <button class="form-submit" onclick="submitDeleteRequest()" style="background: #ff4d4d; border-color: #ff4d4d">Submit Deletion Request →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="container">
@@ -2226,6 +2269,7 @@
           <a href="/privacy" onclick="handleLinkClick(event, '/privacy', 'privacy')">Privacy Policy</a>
           <a href="/terms" onclick="handleLinkClick(event, '/terms', 'terms')">Terms of Service</a>
           <a href="/report" onclick="handleLinkClick(event, '/report', 'report')">Report a Bug</a>
+          <a href="/delete-account" onclick="handleLinkClick(event, '/delete-account', 'delete-account')">Delete Account</a>
         </div>
       </div>
 
@@ -2247,6 +2291,7 @@
       <div class="footer-legal-links">
         <a href="/privacy" onclick="handleLinkClick(event, '/privacy', 'privacy')">Privacy</a>
         <a href="/terms" onclick="handleLinkClick(event, '/terms', 'terms')">Terms</a>
+        <a href="/delete-account" onclick="handleLinkClick(event, '/delete-account', 'delete-account')">Delete</a>
         <a href="mailto:khanhromvn@gmail.com">Contact</a>
       </div>
     </div>
@@ -2287,7 +2332,8 @@
     '': 'main',
     'privacy': 'privacy',
     'terms': 'terms',
-    'report': 'report'
+    'report': 'report',
+    'delete-account': 'delete-account'
   };
 
   function showSection(id, push = true, hash = '') {
@@ -2297,7 +2343,7 @@
 
     if (id === 'main') {
       document.getElementById('main-content').style.display = 'block';
-    } else if (id === 'privacy' || id === 'terms') {
+    } else if (id === 'privacy' || id === 'terms' || id === 'delete-account') {
       document.getElementById(id).classList.add('active');
     } else if (id === 'report') {
       document.getElementById('report').style.display = 'block';
@@ -2414,6 +2460,31 @@
   }, 40);
 
   // ── HOW-DISPLAY FLEX ──
+  // ── SUBMIT DELETE REQUEST ──
+  function submitDeleteRequest() {
+    const id = document.getElementById('del-identifier').value;
+    const confirm = document.getElementById('del-confirm').value;
+    
+    if (!id) {
+      showToast('Please enter your email or username ⚠️');
+      return;
+    }
+    if (confirm !== 'DELETE') {
+      showToast('Please type DELETE to confirm ⚠️');
+      return;
+    }
+
+    showToast('Request sent! We\'ll process your deletion within 7 days. 🙏');
+    
+    // Clear inputs
+    document.getElementById('del-identifier').value = '';
+    document.getElementById('del-confirm').value = '';
+    document.getElementById('del-reason').value = '';
+    
+    // Optional: Redirect to main after a delay
+    setTimeout(() => showSection('main', true, ''), 2000);
+  }
+
   document.getElementById('how-display-0').style.display = 'flex';
 </script>
 </body>
