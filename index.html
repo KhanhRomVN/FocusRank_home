@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusRank — Master Your Focus. Rank Your Habits.</title>
+  <meta name="description" content="The ultimate Pomodoro & habit tracking app. Build consistency, meditate deeper, and compete with yourself.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;900&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════════════ */
+    :root {
+      --font-display: 'Cabinet Grotesk', sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'DM Mono', monospace;
+      --r-sm: 10px;
+      --r-md: 16px;
+      --r-lg: 24px;
+      --r-xl: 32px;
+      --r-pill: 999px;
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* DARK THEME */
+    [data-theme="dark"] {
+      --bg: #060810;
+      --bg2: #0D1022;
+      --bg3: #13182E;
+      --bg4: #1A2040;
+      --bg5: #212850;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --text: #E8ECFF;
+      --text2: #7880A8;
+      --text3: #363E66;
+      --accent: #7C6FFF;
+      --accent2: #5A4FD4;
+      --accent-glow: rgba(124,111,255,0.25);
+      --accent-subtle: rgba(124,111,255,0.12);
+      --green: #00D49A;
+      --green-subtle: rgba(0,212,154,0.12);
+      --amber: #F59E0B;
+      --amber-subtle: rgba(245,158,11,0.12);
+      --rose: #FF5C7A;
+      --sky: #38BDF8;
+      --card-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      --hero-gradient: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,111,255,0.3) 0%, transparent 70%);
+      --noise-overlay: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      --btn-text: #fff;
+    }
+
+    /* LIGHT THEME */
+    [data-theme="light"] {
+      --bg: #F4F3FF;
+      --bg2: #ECEAFF;
+      --bg3: #E2DFFF;
+      --bg4: #D5D0FF;
+      --bg5: #C8C2FF;
+      --surface: rgba(255,255,255,0.7);
+      --surface-hover: rgba(255,255,255,0.9);
+      --border: rgba(90,79,212,0.1);
+      --border2: rgba(90,79,212,0.2);
+      --text: #0D0B2A;
+      --text2: #5A5285;
+      --text3: #9991C8;
+      --accent: #5A4FD4;
+      --accent2: #3F34B8;
+      --accent-glow: rgba(90,79,212,0.18);
+      --accent-subtle: rgba(90,79,212,0.08);
+      --green: #00956B;
+      --green-subtle: rgba(0,149,107,0.1);
+      --amber: #D97706;
+      --amber-subtle: rgba(217,119,6,0.1);
+      --rose: #E53875;
+      --sky: #0284C7;
+      --card-shadow: 0 20px 60px rgba(90,79,212,0.1);
+      --hero-gradient: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(90,79,212,0.15) 0%, transparent 70%);
+      --btn-text: #fff;
+    }
+
+    /* ══════════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-display);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ══════════════════════════════════════════════
+       SCROLLBAR
+    ══════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    /* ══════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════ */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ══════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 0;
+      transition: all 0.3s;
+    }
+
+    nav.scrolled {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-mark {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .logo-mark svg { width: 18px; height: 18px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      transition: color var(--transition);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-btn {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--text2);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+      font-size: 15px;
+    }
+
+    .theme-btn:hover { background: var(--surface-hover); color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--r-md);
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--btn-text);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px var(--accent-glow);
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      color: var(--text);
+    }
+
+    .btn-outline:hover { background: var(--surface-hover); }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 16px;
+      border-radius: var(--r-lg);
+    }
+
+    /* ══════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 0 80px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: var(--hero-gradient);
+      pointer-events: none;
+    }
+
+    .hero-grid-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0.4;
+    }
+
+    [data-theme="dark"] .hero-grid-lines { opacity: 0.07; }
+    [data-theme="light"] .hero-grid-lines { opacity: 0.12; }
+
+    .hero-grid-lines::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--accent) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: var(--accent-subtle);
+      border: 1px solid var(--border2);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-title {
+      font-size: clamp(42px, 5.5vw, 70px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      margin-bottom: 24px;
+    }
+
+    .hero-title em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      color: var(--text2);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .play-btn {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all var(--transition);
+    }
+
+    .play-btn:hover { background: var(--surface-hover); color: var(--text); }
+
+    .play-note { font-size: 12px; color: var(--text3); }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .hero-stat-v {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .hero-stat-l {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    /* PHONE MOCKUP */
+    .hero-phone-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone-glow {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: var(--accent-glow);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .phone-frame {
+      width: 260px;
+      border-radius: 40px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      position: relative;
+      animation: float 5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .phone-notch {
+      height: 28px;
+      background: var(--bg);
+      border-radius: 0 0 14px 14px;
+      width: 100px;
+      margin: 0 auto;
+    }
+
+    .phone-content {
+      padding: 16px 16px 24px;
+    }
+
+    .phone-sbar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+    }
+
+    .phone-score {
+      background: linear-gradient(135deg, var(--bg3), var(--bg4));
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .phone-score-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; }
+    .phone-score-num {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .phone-score-sub { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+    .phone-chips {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .phone-chip {
+      padding: 3px 9px;
+      border-radius: var(--r-pill);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text2);
+    }
+
+    .phone-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .phone-mini-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .pmv { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+    .pml { font-size: 8px; color: var(--text3); margin-top: 2px; }
+
+    .phone-habit {
+      margin-top: 10px;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .habit-dot {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      background: var(--green-subtle);
+      border: 1px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      color: var(--green);
+    }
+
+    .habit-info { flex: 1; }
+    .habit-name { font-size: 11px; font-weight: 600; }
+    .habit-sub { font-size: 9px; color: var(--text3); }
+    .habit-pts { font-size: 10px; font-weight: 700; color: var(--green); }
+
+    /* FLOATING BADGES */
+    .float-badge {
+      position: absolute;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      animation: floatBadge 4s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .float-badge-1 {
+      right: -40px;
+      top: 80px;
+      animation-delay: 0.5s;
+    }
+
+    .float-badge-2 {
+      left: -40px;
+      bottom: 100px;
+      animation-delay: 1.5s;
+    }
+
+    .fb-ico { font-size: 18px; }
+    .fb-text-v { font-size: 14px; font-weight: 800; letter-spacing: -0.5px; }
+    .fb-text-l { font-size: 9px; color: var(--text3); }
+
+    /* ══════════════════════════════════════════════
+       SECTION SHARED
+    ══════════════════════════════════════════════ */
+    section { padding: 100px 0; }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 20px; height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════════════
+       FEATURES
+    ══════════════════════════════════════════════ */
+    #features {
+      background: var(--bg2);
+      position: relative;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .features-header .section-desc {
+      margin: 0 auto;
+    }
+
+    .features-header .section-label {
+      justify-content: center;
+    }
+
+    .features-header .section-label::before { display: none; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 28px;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .feature-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--border2);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.2);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-card.featured {
+      background: linear-gradient(135deg, var(--accent-subtle), rgba(0,212,154,0.06));
+      border-color: rgba(124,111,255,0.3);
+    }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: var(--accent-subtle);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--accent-subtle);
+      border: 1px solid var(--border2);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ══════════════════════════════════════════════
+       HOW IT WORKS
+    ══════════════════════════════════════════════ */
+    #how {
+      overflow: hidden;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .step:first-child { padding-top: 0; }
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text3);
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      transition: all var(--transition);
+    }
+
+    .step.active .step-num {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .step-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+      color: var(--text3);
+      transition: color var(--transition);
+    }
+
+    .step.active .step-title { color: var(--text); }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--text3);
+      line-height: 1.6;
+      transition: color var(--transition);
+      display: none;
+    }
+
+    .step.active .step-desc { display: block; color: var(--text2); }
+
+    .how-visual {
+      position: relative;
+    }
+
+    .how-screen {
+      background: var(--bg3);
+      border-radius: var(--r-xl);
+      border: 1px solid var(--border2);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    .how-screen-img {
+      width: 100%;
+      padding: 24px;
+    }
+
+    /* Focus timer mockup */
+    .timer-mockup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 24px;
+      gap: 20px;
+    }
+
+    .timer-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; }
+
+    .timer-ring {
+      position: relative;
+      width: 160px; height: 160px;
+    }
+
+    .timer-ring svg { transform: rotate(-90deg); }
+
+    .timer-track { fill: none; stroke: var(--border2); stroke-width: 8; }
+    .timer-prog {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 110;
+      transition: stroke-dashoffset 1s;
+    }
+
+    .timer-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-digits {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .timer-sub { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .tc-btn {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .tc-play {
+      width: 56px; height: 56px;
+      border-radius: 18px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+
+    /* ══════════════════════════════════════════════
+       SCORING
+    ══════════════════════════════════════════════ */
+    #scoring {
+      background: var(--bg2);
+    }
+
+    .scoring-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .score-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .score-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all var(--transition);
+    }
+
+    .score-item:hover { border-color: var(--border2); background: var(--surface-hover); }
+
+    .si-ico {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .si-ico.purple { background: var(--accent-subtle); }
+    .si-ico.green { background: var(--green-subtle); }
+    .si-ico.amber { background: var(--amber-subtle); }
+
+    .si-info { flex: 1; }
+    .si-name { font-size: 14px; font-weight: 700; }
+    .si-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+    .si-pts {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .score-total {
+      background: linear-gradient(135deg, var(--accent-subtle), var(--green-subtle));
+      border: 1px solid var(--border2);
+      border-radius: var(--r-lg);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .st-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; }
+    .st-val { font-size: 32px; font-weight: 900; letter-spacing: -1.5px; }
+
+    /* Rank widget */
+    .rank-widget {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 28px;
+    }
+
+    .rank-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .rank-title { font-size: 16px; font-weight: 800; letter-spacing: -0.4px; }
+    .rank-period { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+
+    .rank-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      transition: background var(--transition);
+    }
+
+    .rank-row:hover { background: var(--surface-hover); }
+    .rank-row.you { background: var(--accent-subtle); border: 1px solid rgba(124,111,255,0.2); }
+
+    .rank-pos {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text3);
+      width: 24px;
+      text-align: center;
+    }
+
+    .rank-pos.gold { color: var(--amber); }
+    .rank-pos.silver { color: var(--text2); }
+    .rank-pos.bronze { color: #CD7F32; }
+
+    .rank-avatar {
+      width: 32px; height: 32px;
+      border-radius: 10px;
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .rank-name { flex: 1; font-size: 13px; font-weight: 600; }
+    .rank-score { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--accent); }
+
+    .rank-bar-wrap { width: 60px; height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+    .rank-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+
+    /* ══════════════════════════════════════════════
+       SOUNDS
+    ══════════════════════════════════════════════ */
+    #sounds {
+      overflow: hidden;
+    }
+
+    .sounds-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .sound-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 14px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .sound-chip:hover { background: var(--surface-hover); border-color: var(--border2); transform: translateY(-2px); }
+    .sound-chip.on { border-color: rgba(124,111,255,0.4); background: var(--accent-subtle); }
+
+    .sc-e { font-size: 20px; }
+    .sc-n { font-size: 10px; color: var(--text3); text-align: center; font-weight: 500; }
+    .sound-chip.on .sc-n { color: var(--accent); }
+
+    .mixer-strips {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mix-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 14px;
+    }
+
+    .mix-ico { font-size: 16px; flex-shrink: 0; }
+    .mix-name { font-size: 12px; font-weight: 600; width: 80px; flex-shrink: 0; }
+
+    .mix-waves {
+      display: flex;
+      gap: 2px;
+      align-items: flex-end;
+      height: 14px;
+    }
+
+    .mw {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--accent);
+      animation: mwave 0.6s ease-in-out infinite alternate;
+    }
+
+    .mw:nth-child(1) { height: 4px; }
+    .mw:nth-child(2) { height: 10px; animation-delay: 0.15s; }
+    .mw:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+    .mw:nth-child(4) { height: 12px; animation-delay: 0.45s; }
+
+    @keyframes mwave {
+      0% { transform: scaleY(0.3); }
+      100% { transform: scaleY(1); }
+    }
+
+    .mix-vol {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--bg5);
+      appearance: none;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .mix-vol::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .mix-pct {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text3);
+      width: 28px;
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════════
+       DOWNLOAD
+    ══════════════════════════════════════════════ */
+    #download {
+      background: var(--bg2);
+      text-align: center;
+    }
+
+    .download-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .download-inner .section-label { justify-content: center; }
+    .download-inner .section-label::before { display: none; }
+
+    .download-title {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 900;
+      letter-spacing: -2.5px;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    .download-title em { font-family: var(--font-serif); font-style: italic; color: var(--accent); }
+
+    .download-desc { font-size: 17px; color: var(--text2); margin: 0 auto 40px; max-width: 500px; }
+
+    .download-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      border-radius: var(--r-md);
+      background: var(--text);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 15px;
+      transition: all var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .store-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
+
+    .store-btn.outline {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border2);
+    }
+
+    .store-btn.outline:hover { background: var(--surface-hover); }
+
+    .store-icon { font-size: 24px; }
+
+    .store-meta { text-align: left; }
+    .store-sub { font-size: 10px; font-weight: 400; opacity: 0.6; }
+    .store-name { font-size: 16px; font-weight: 800; line-height: 1.2; }
+
+    .download-note {
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    /* ══════════════════════════════════════════════
+       PRIVACY & TERMS
+    ══════════════════════════════════════════════ */
+    .legal-section {
+      display: none;
+      padding: 120px 0;
+    }
+
+    .legal-section.active { display: block; }
+
+    .legal-content {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .legal-updated {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text3);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      padding: 5px 12px;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+    }
+
+    .legal-title {
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    .legal-subtitle { font-size: 17px; color: var(--text2); margin-bottom: 48px; }
+
+    .legal-block { margin-bottom: 36px; }
+    .legal-block h3 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .legal-block p {
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+
+    /* ══════════════════════════════════════════════
+       REPORT
+    ══════════════════════════════════════════════ */
+    #report { display: none; padding: 120px 0; }
+    #report.active { display: block; }
+
+    .report-inner { max-width: 600px; margin: 0 auto; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: block; }
+
+    .form-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .form-cat {
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .form-cat.active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
+
+    .form-submit {
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--r-md);
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px var(--accent-glow); }
+
+    /* ══════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════ */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 64px 0 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand .logo { margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: 13px;
+      color: var(--text3);
+      line-height: 1.65;
+      max-width: 240px;
+    }
+
+    .footer-brand-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .social-link {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      color: var(--text2);
+      transition: all var(--transition);
+    }
+
+    .social-link:hover { background: var(--surface-hover); color: var(--text); }
+
+    .footer-col-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 16px;
+    }
+
+    .footer-links { display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 14px;
+      color: var(--text2);
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy { font-size: 13px; color: var(--text3); }
+    .footer-copy a { color: var(--accent); }
+
+    .footer-legal-links { display: flex; gap: 20px; }
+    .footer-legal-links a { font-size: 12px; color: var(--text3); transition: color var(--transition); }
+    .footer-legal-links a:hover { color: var(--text); }
+
+    /* ══════════════════════════════════════════════
+       BACK TO TOP / MOBILE NAV
+    ══════════════════════════════════════════════ */
+    .back-top {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 24px var(--accent-glow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all var(--transition);
+      z-index: 90;
+      border: none;
+      font-size: 14px;
+    }
+
+    .back-top.visible { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      .hero-content { grid-template-columns: 1fr; gap: 48px; }
+      .hero-phone-wrap { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+      .scoring-grid { grid-template-columns: 1fr; }
+      .sounds-layout { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+
+    @media (max-width: 640px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .float-badge { display: none; }
+      .download-btns { flex-direction: column; align-items: center; }
+    }
+
+    /* ══════════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-pill);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 200;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ══════════════════════════════════════════════
+       DIVIDER ORNAMENT
+    ══════════════════════════════════════════════ */
+    .divider-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-subtle); border: 1px solid var(--border2); }
+  </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="logo" onclick="handleLinkClick(event, '/', 'main')">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        FocusRank
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="/#features" onclick="handleLinkClick(event, '/#features', 'main')">Features</a></li>
+        <li><a href="/#how" onclick="handleLinkClick(event, '/#how', 'main')">How it works</a></li>
+        <li><a href="/#scoring" onclick="handleLinkClick(event, '/#scoring', 'main')">Scoring</a></li>
+        <li><a href="/#download" onclick="handleLinkClick(event, '/#download', 'main')">Download</a></li>
+        <li><a href="/report" onclick="handleLinkClick(event, '/report', 'report')">Report</a></li>
+      </ul>
+
+      <div class="nav-right">
+        <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+          <span id="theme-icon">☀</span>
+        </button>
+        <a href="https://play.google.com/store" class="btn btn-primary" style="font-size:13px;padding:8px 18px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83 1-.91 1.32-.34l14 8.5c.3.18.3.66 0 .84l-14 8.5C3 21.41 3 20.5 3 20.5z"/></svg>
+          Get the App
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid-lines"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="fade-up">
+          <div class="hero-badge">
+            <span></span>
+            Now live on Google Play
+          </div>
+          <h1 class="hero-title">
+            Master Your<br><em>Focus.</em><br>Rank Your Habits.
+          </h1>
+          <p class="hero-desc">
+            The ultimate Pomodoro & habit tracking companion. Build consistency, meditate deeper, compete with yourself — and rise the ranks.
+          </p>
+          <div class="hero-actions">
+            <a href="https://play.google.com/store" class="btn btn-primary btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83 1-.91 1.32-.34l14 8.5c.3.18.3.66 0 .84l-14 8.5C3 21.41 3 20.5 3 20.5z"/></svg>
+              Download Free
+            </a>
+            <a href="#features" class="btn btn-outline btn-lg">Explore Features</a>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-v" style="color: var(--accent)">12K+</div>
+              <div class="hero-stat-l">Active users</div>
+            </div>
+            <div>
+              <div class="hero-stat-v" style="color: var(--green)">4.8 ★</div>
+              <div class="hero-stat-l">Play Store rating</div>
+            </div>
+            <div>
+              <div class="hero-stat-v">Free</div>
+              <div class="hero-stat-l">Forever</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHONE -->
+        <div class="hero-phone-wrap fade-up" style="transition-delay: 0.2s">
+          <div class="phone-glow"></div>
+
+          <div class="float-badge float-badge-1">
+            <span class="fb-ico">🔥</span>
+            <div>
+              <div class="fb-text-v">7-day</div>
+              <div class="fb-text-l">Streak active</div>
+            </div>
+          </div>
+
+          <div class="float-badge float-badge-2">
+            <span class="fb-ico">🏆</span>
+            <div>
+              <div class="fb-text-v">#12</div>
+              <div class="fb-text-l">Community rank</div>
+            </div>
+          </div>
+
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-content">
+              <div class="phone-sbar">
+                <span>9:41</span>
+                <span>100%</span>
+              </div>
+              <div class="phone-score">
+                <div class="phone-score-lbl">Today's Focus Score</div>
+                <div class="phone-score-num">742</div>
+                <div class="phone-score-sub">Rank #12 · Top 8% community</div>
+                <div class="phone-chips">
+                  <span class="phone-chip">🔥 7 streak</span>
+                  <span class="phone-chip">−23% usage</span>
+                  <span class="phone-chip">Top 10%</span>
+                </div>
+              </div>
+              <div class="phone-mini-grid">
+                <div class="phone-mini-card">
+                  <div class="pmv" style="color:var(--rose)">3h 42m</div>
+                  <div class="pml">Screen Time</div>
+                </div>
+                <div class="phone-mini-card">
+                  <div class="pmv" style="color:var(--green)">2h 18m</div>
+                  <div class="pml">Focused</div>
+                </div>
+              </div>
+              <div class="phone-habit">
+                <div class="habit-dot">✓</div>
+                <div class="habit-info">
+                  <div class="habit-name">Sleep Early</div>
+                  <div class="habit-sub">🔥 7 days streak</div>
+                </div>
+                <div class="habit-pts">+60</div>
+              </div>
+              <div class="phone-habit" style="margin-top:6px">
+                <div class="habit-dot" style="background:var(--amber-subtle);border-color:var(--amber);color:var(--amber)">○</div>
+                <div class="habit-info">
+                  <div class="habit-name">Morning No-Phone</div>
+                  <div class="habit-sub" style="color:var(--amber)">In progress</div>
+                </div>
+                <div class="habit-pts" style="color:var(--amber)">+50</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section id="features">
+    <div class="container">
+      <div class="features-header fade-up">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need to<br>build better focus</h2>
+        <p class="section-desc">From deep work sessions to breathing meditation, FocusRank covers every aspect of your digital wellness journey.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card fade-up">
+          <div class="feature-icon">⏱</div>
+          <div class="feature-title">Pomodoro & Deep Work</div>
+          <div class="feature-desc">Customizable work sessions from 10 to 120 minutes. Choose from Deep Work, Pomodoro, Micro Focus, or Flow State modes tailored to your energy level.</div>
+          <span class="feature-tag">Core</span>
+        </div>
+
+        <div class="feature-card featured fade-up" style="transition-delay:.1s">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-title">Community Ranking</div>
+          <div class="feature-desc">Earn points every session and compete anonymously with the community. Track your rank, climb leaderboards, and celebrate milestones with 48 unique achievements.</div>
+          <span class="feature-tag" style="background:var(--green-subtle);border-color:rgba(0,212,154,0.3);color:var(--green)">Flagship</span>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:.2s">
+          <div class="feature-icon">🧘</div>
+          <div class="feature-title">Guided Meditation</div>
+          <div class="feature-desc">Four breathing techniques — 4-7-8, Box Breathing, Wim Hof, and 5-5 Coherent — with animated breath guides and dedicated session tracking.</div>
+          <span class="feature-tag">Wellness</span>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:.1s">
+          <div class="feature-icon">🎵</div>
+          <div class="feature-title">Sound Mixer</div>
+          <div class="feature-desc">32 ambient sounds across 6 categories. Mix up to 8 layers simultaneously with per-track volume control. Save custom presets for your favorite blends.</div>
+          <span class="feature-tag">32 sounds</span>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:.2s">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">Habit Tracking</div>
+          <div class="feature-desc">Create daily habits with streak tracking, dot calendars, weekly analytics, and detailed insights on your best/worst performing patterns.</div>
+          <span class="feature-tag">7 habits max</span>
+        </div>
+
+        <div class="feature-card fade-up" style="transition-delay:.3s">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Deep Analytics</div>
+          <div class="feature-desc">Weekly, monthly, and quarterly statistics. Understand your peak performance days, session trends, and habit completion rates at a glance.</div>
+          <span class="feature-tag">Insights</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section id="how">
+    <div class="container">
+      <div class="how-grid">
+        <div class="fade-up">
+          <div class="section-label">How it works</div>
+          <h2 class="section-title" style="margin-bottom:40px">Four steps to better focus</h2>
+
+          <div class="steps-list">
+            <div class="step active" onclick="setStep(this, 0)">
+              <div class="step-num">01</div>
+              <div>
+                <div class="step-title">Set up your session</div>
+                <div class="step-desc">Choose Work or Meditation mode. Pick your session type, duration, and ambient soundscape. Everything is tuned for deep focus before you start.</div>
+              </div>
+            </div>
+            <div class="step" onclick="setStep(this, 1)">
+              <div class="step-num">02</div>
+              <div>
+                <div class="step-title">Focus without distractions</div>
+                <div class="step-desc">Lock-screen mode prevents mid-session interruptions. The minimalist timer keeps you anchored. Your ambient mixer plays in the background.</div>
+              </div>
+            </div>
+            <div class="step" onclick="setStep(this, 2)">
+              <div class="step-num">03</div>
+              <div>
+                <div class="step-title">Earn points & build streaks</div>
+                <div class="step-desc">Every completed session earns points based on duration and type. Habits add bonus points. Maintain streaks for multiplier bonuses.</div>
+              </div>
+            </div>
+            <div class="step" onclick="setStep(this, 3)">
+              <div class="step-num">04</div>
+              <div>
+                <div class="step-title">Rise the community ranks</div>
+                <div class="step-desc">Your daily score syncs to the leaderboard. Watch your rank rise as you outperform yesterday's self. Unlock achievements and level up.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-visual fade-up" style="transition-delay:.2s">
+          <div class="how-screen">
+            <!-- Timer mockup -->
+            <div class="timer-mockup" id="how-display-0">
+              <div class="timer-label">Deep Work Session</div>
+              <div class="timer-ring">
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  <circle class="timer-track" cx="80" cy="80" r="68"/>
+                  <circle class="timer-prog" cx="80" cy="80" r="68"/>
+                </svg>
+                <div class="timer-center">
+                  <div class="timer-digits">42:18</div>
+                  <div class="timer-sub">remaining</div>
+                </div>
+              </div>
+              <div class="timer-controls">
+                <div class="tc-btn">−5m</div>
+                <div class="tc-play">▶</div>
+                <div class="tc-btn">+5m</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+                <span class="phone-chip">🎵 Rain café mix</span>
+                <span class="phone-chip">+3.2 pts/min</span>
+              </div>
+            </div>
+
+            <div class="timer-mockup" id="how-display-1" style="display:none">
+              <div class="timer-label">Stay Focused · Lock Active</div>
+              <div class="timer-ring">
+                <svg width="160" height="160" viewBox="0 0 160 160">
+                  <circle class="timer-track" cx="80" cy="80" r="68"/>
+                  <circle class="timer-prog" cx="80" cy="80" r="68" style="stroke:var(--green);stroke-dashoffset:220;"/>
+                </svg>
+                <div class="timer-center">
+                  <div class="timer-digits" style="font-size:24px">50:00</div>
+                  <div class="timer-sub" style="color:var(--green)">RUNNING</div>
+                </div>
+              </div>
+              <div style="font-size:12px;color:var(--text3);text-align:center;padding:0 20px">Screen lock active — exit disabled until session ends</div>
+            </div>
+
+            <div class="timer-mockup" id="how-display-2" style="display:none">
+              <div style="text-align:center;padding:8px 0">
+                <div style="font-size:48px;margin-bottom:8px">🎉</div>
+                <div style="font-size:20px;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px">Session Complete!</div>
+                <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Deep Work · 50 min</div>
+                <div style="background:var(--accent-subtle);border:1px solid var(--border2);border-radius:var(--r-md);padding:16px;margin-bottom:14px">
+                  <div style="font-size:36px;font-weight:900;color:var(--accent);letter-spacing:-2px">+160</div>
+                  <div style="font-size:11px;color:var(--text3)">points earned</div>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:center;">
+                  <span class="phone-chip" style="background:var(--amber-subtle);border-color:var(--amber);color:var(--amber)">🔥 7-day streak!</span>
+                  <span class="phone-chip">×1.2 streak bonus</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timer-mockup" id="how-display-3" style="display:none">
+              <div style="width:100%">
+                <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:16px">Leaderboard · Today</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--amber-subtle);border:1px solid rgba(245,158,11,0.2)">
+                    <span style="font-size:13px;font-family:var(--font-mono);color:var(--amber);width:20px">1</span>
+                    <span style="font-size:15px">🐉</span>
+                    <span style="flex:1;font-size:13px;font-weight:600">DragonFocus</span>
+                    <span style="font-family:var(--font-mono);font-size:13px;color:var(--amber)">1,420</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px">
+                    <span style="font-size:13px;font-family:var(--font-mono);color:var(--text3);width:20px">11</span>
+                    <span style="font-size:15px">🦊</span>
+                    <span style="flex:1;font-size:13px;font-weight:600">ZenMaster_v</span>
+                    <span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">760</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--accent-subtle);border:1px solid rgba(124,111,255,0.2)">
+                    <span style="font-size:13px;font-family:var(--font-mono);color:var(--accent);width:20px">12</span>
+                    <span style="font-size:15px">⭐</span>
+                    <span style="flex:1;font-size:13px;font-weight:700;color:var(--accent)">You</span>
+                    <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent)">742</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px">
+                    <span style="font-size:13px;font-family:var(--font-mono);color:var(--text3);width:20px">13</span>
+                    <span style="font-size:15px">🌿</span>
+                    <span style="flex:1;font-size:13px;font-weight:600">NightCoder</span>
+                    <span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">710</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SCORING ═══ -->
+  <section id="scoring" style="background:var(--bg2)">
+    <div class="container">
+      <div class="scoring-grid">
+        <div class="fade-up">
+          <div class="section-label">Scoring system</div>
+          <h2 class="section-title">Every minute earns<br>your rank</h2>
+          <p class="section-desc" style="margin-bottom:32px">A transparent point system that rewards consistency, depth, and variety of practice.</p>
+
+          <div class="score-breakdown">
+            <div class="score-item">
+              <div class="si-ico purple">💼</div>
+              <div class="si-info">
+                <div class="si-name">Deep Work</div>
+                <div class="si-desc">50-min session · full completion</div>
+              </div>
+              <div class="si-pts">+160 pts</div>
+            </div>
+            <div class="score-item">
+              <div class="si-ico purple">🍅</div>
+              <div class="si-info">
+                <div class="si-name">Pomodoro</div>
+                <div class="si-desc">25-min session</div>
+              </div>
+              <div class="si-pts">+80 pts</div>
+            </div>
+            <div class="score-item">
+              <div class="si-ico green">🧘</div>
+              <div class="si-info">
+                <div class="si-name">Meditation 10 min</div>
+                <div class="si-desc">4-7-8 breathing · calm mode</div>
+              </div>
+              <div class="si-pts">+60 pts</div>
+            </div>
+            <div class="score-item">
+              <div class="si-ico amber">🔥</div>
+              <div class="si-info">
+                <div class="si-name">7-day streak bonus</div>
+                <div class="si-desc">Active streak multiplier ×1.2</div>
+              </div>
+              <div class="si-pts" style="color:var(--amber)">×1.2</div>
+            </div>
+            <div class="score-item">
+              <div class="si-ico green">✅</div>
+              <div class="si-info">
+                <div class="si-name">Habit completion</div>
+                <div class="si-desc">Per daily habit checked off</div>
+              </div>
+              <div class="si-pts" style="color:var(--green)">+40–80</div>
+            </div>
+          </div>
+
+          <div class="score-total" style="margin-top:16px">
+            <div>
+              <div class="st-label">Example: Good Day Total</div>
+              <div class="st-val">742 pts</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--text3)">Rank reached</div>
+              <div style="font-size:22px;font-weight:900;color:var(--accent)">#12</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-up" style="transition-delay:.2s">
+          <div class="rank-widget">
+            <div class="rank-header">
+              <div class="rank-title">Top Performers</div>
+              <div class="rank-period">Today · Live</div>
+            </div>
+            <div class="rank-list">
+              <div class="rank-row">
+                <div class="rank-pos gold">1</div>
+                <div class="rank-avatar">🐉</div>
+                <div class="rank-name">DragonFocus</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:100%"></div></div>
+                <div class="rank-score">1,420</div>
+              </div>
+              <div class="rank-row">
+                <div class="rank-pos silver">2</div>
+                <div class="rank-avatar">🦅</div>
+                <div class="rank-name">EagleMode</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:85%"></div></div>
+                <div class="rank-score">1,210</div>
+              </div>
+              <div class="rank-row">
+                <div class="rank-pos bronze">3</div>
+                <div class="rank-avatar">🌙</div>
+                <div class="rank-name">NightOwl_K</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:76%"></div></div>
+                <div class="rank-score">1,080</div>
+              </div>
+              <div class="rank-row">
+                <div class="rank-pos" style="color:var(--text3)">10</div>
+                <div class="rank-avatar">🦊</div>
+                <div class="rank-name">ZenMaster_v</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:55%"></div></div>
+                <div class="rank-score">780</div>
+              </div>
+              <div class="rank-row you">
+                <div class="rank-pos" style="color:var(--accent)">12</div>
+                <div class="rank-avatar">⭐</div>
+                <div class="rank-name" style="color:var(--accent);font-weight:800">You · Khanh</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:52%;background:var(--accent)"></div></div>
+                <div class="rank-score">742</div>
+              </div>
+              <div class="rank-row">
+                <div class="rank-pos" style="color:var(--text3)">13</div>
+                <div class="rank-avatar">🌿</div>
+                <div class="rank-name">NightCoder</div>
+                <div class="rank-bar-wrap"><div class="rank-bar" style="width:50%"></div></div>
+                <div class="rank-score">710</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SOUNDS ═══ -->
+  <section id="sounds">
+    <div class="container">
+      <div class="sounds-layout">
+        <div class="fade-up">
+          <div class="section-label">Sound Mixer</div>
+          <h2 class="section-title">32 sounds,<br>infinite blends</h2>
+          <p class="section-desc" style="margin-bottom:32px">Handpicked ambient layers across six categories. Mix, layer, and save presets that put you in the zone every time.</p>
+
+          <div class="sound-grid">
+            <div class="sound-chip on"><div class="sc-e">🌧</div><div class="sc-n">Rain</div></div>
+            <div class="sound-chip on"><div class="sc-e">☕</div><div class="sc-n">Café</div></div>
+            <div class="sound-chip"><div class="sc-e">🌲</div><div class="sc-n">Forest</div></div>
+            <div class="sound-chip"><div class="sc-e">🌊</div><div class="sc-n">Ocean</div></div>
+            <div class="sound-chip"><div class="sc-e">🔥</div><div class="sc-n">Campfire</div></div>
+            <div class="sound-chip on"><div class="sc-e">🟤</div><div class="sc-n">Brown noise</div></div>
+            <div class="sound-chip"><div class="sc-e">🌌</div><div class="sc-n">Space</div></div>
+            <div class="sound-chip"><div class="sc-e">⌨</div><div class="sc-n">Keyboard</div></div>
+            <div class="sound-chip"><div class="sc-e">⛈</div><div class="sc-n">Thunder</div></div>
+            <div class="sound-chip"><div class="sc-e">🐦</div><div class="sc-n">Birds</div></div>
+            <div class="sound-chip"><div class="sc-e">🎵</div><div class="sc-n">Lo-fi</div></div>
+            <div class="sound-chip"><div class="sc-e">🚂</div><div class="sc-n">Train</div></div>
+          </div>
+
+          <div class="mixer-strips">
+            <div class="mix-row">
+              <span class="mix-ico">🌧</span>
+              <span class="mix-name">Rain</span>
+              <div class="mix-waves"><div class="mw"></div><div class="mw"></div><div class="mw"></div><div class="mw"></div></div>
+              <input class="mix-vol" type="range" min="0" max="100" value="75" oninput="updateVol(this)">
+              <span class="mix-pct">75%</span>
+            </div>
+            <div class="mix-row">
+              <span class="mix-ico">☕</span>
+              <span class="mix-name">Café</span>
+              <div class="mix-waves" style="animation-delay:.3s"><div class="mw"></div><div class="mw"></div><div class="mw"></div><div class="mw"></div></div>
+              <input class="mix-vol" type="range" min="0" max="100" value="50" oninput="updateVol(this)">
+              <span class="mix-pct">50%</span>
+            </div>
+            <div class="mix-row">
+              <span class="mix-ico">🟤</span>
+              <span class="mix-name">Brown noise</span>
+              <div class="mix-waves" style="animation-delay:.6s"><div class="mw"></div><div class="mw"></div><div class="mw"></div><div class="mw"></div></div>
+              <input class="mix-vol" type="range" min="0" max="100" value="40" oninput="updateVol(this)">
+              <span class="mix-pct">40%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-up" style="transition-delay:.2s">
+          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:28px">
+            <div style="font-size:14px;font-weight:800;margin-bottom:16px;letter-spacing:-.3px">Saved Presets</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--accent-subtle);border:1px solid rgba(124,111,255,0.25);border-radius:var(--r-md);cursor:pointer">
+                <span style="font-size:20px">🌧</span>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700">Rain Café</div>
+                  <div style="font-size:10px;color:var(--text3)">Rain · Café · Brown noise</div>
+                </div>
+                <div style="width:20px;height:20px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">✓</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .2s">
+                <span style="font-size:20px">🌲</span>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700">Silent Forest</div>
+                  <div style="font-size:10px;color:var(--text3)">Forest · Birds · Wind</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer">
+                <span style="font-size:20px">🌌</span>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700">Deep Space</div>
+                  <div style="font-size:10px;color:var(--text3)">Space · Drone · Crystal</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer">
+                <span style="font-size:20px">🔥</span>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:700">Night Fire</div>
+                  <div style="font-size:10px;color:var(--text3)">Fire · Night · Wind</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--text3);text-align:center">+ Save your own custom mixes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DOWNLOAD ═══ -->
+  <section id="download">
+    <div class="container">
+      <div class="download-inner fade-up">
+        <div class="section-label">Get started free</div>
+        <h2 class="download-title">Start focusing<br><em>better today.</em></h2>
+        <p class="download-desc">Free forever. No ads. No subscriptions. Just the tools you need to build your best habits.</p>
+
+        <div class="download-btns">
+          <a href="https://play.google.com/store" class="store-btn">
+            <span class="store-icon">▶</span>
+            <div class="store-meta">
+              <div class="store-sub">Get it on</div>
+              <div class="store-name">Google Play</div>
+            </div>
+          </a>
+          <a href="#" class="store-btn outline" onclick="showToast('iOS version coming soon! 🍎'); return false;">
+            <span class="store-icon">🍎</span>
+            <div class="store-meta">
+              <div class="store-sub">Coming soon to</div>
+              <div class="store-name">App Store</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="download-note">
+          Requires Android 8.0+ · Free · No account needed to start
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<!-- END MAIN CONTENT -->
+
+<!-- ═══ PRIVACY POLICY ═══ -->
+<div id="privacy" class="legal-section">
+  <div class="container">
+    <div class="legal-content">
+      <div class="legal-updated">📅 Last updated: April 30, 2026</div>
+      <h1 class="legal-title">Privacy Policy</h1>
+      <p class="legal-subtitle">We believe privacy is a right, not a feature. Here's exactly how we handle your data.</p>
+
+      <div class="legal-block">
+        <h3>1. Information We Collect</h3>
+        <p>FocusRank collects the minimum data necessary to operate the app. If you sign in via Google OAuth, we receive your display name, email address, and profile picture. We also collect anonymized usage statistics — session durations, completion counts, and habit check-ins — to power your rankings and analytics.</p>
+        <p>We never collect financial information, contacts, SMS, call logs, or location data.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>2. How We Use Your Information</h3>
+        <p>Your data is used exclusively to provide, maintain, and improve FocusRank features: authenticating your account, calculating your daily Focus Score, maintaining leaderboard rankings, and persisting your habit/session history across devices.</p>
+        <p>We do not sell, rent, trade, or share your personal information with third-party advertisers or data brokers under any circumstances.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>3. Data Storage & Security</h3>
+        <p>All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Authentication tokens are stored securely on your device using Android's Keystore system. Your backend data is hosted on Supabase with row-level security policies ensuring strict data isolation between users.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>4. App Usage Statistics</h3>
+        <p>FocusRank requests the <code>PACKAGE_USAGE_STATS</code> permission to calculate habit scores based on your screen time patterns. This data is processed locally on your device. Only aggregated, anonymized statistics are ever transmitted to our servers — never raw app-by-app data.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>5. Third-Party Services</h3>
+        <p>We use Google OAuth for optional sign-in and Supabase for backend infrastructure. By using Google OAuth, you agree to Google's Privacy Policy. Both services adhere to GDPR and CCPA standards.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>6. Your Rights</h3>
+        <p>You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:khanhromvn@gmail.com" style="color:var(--accent)">khanhromvn@gmail.com</a>. You can also delete your account and all associated data directly from the app's Settings screen. Deletion is permanent and processed within 30 days.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>7. Children's Privacy</h3>
+        <p>FocusRank is not directed at children under 13. We do not knowingly collect data from minors. If you believe a child has provided us personal information, please contact us immediately.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>8. Contact</h3>
+        <p>For privacy-related questions, contact <strong>KhanhRomVN</strong> at <a href="mailto:khanhromvn@gmail.com" style="color:var(--accent)">khanhromvn@gmail.com</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TERMS OF SERVICE ═══ -->
+<div id="terms" class="legal-section">
+  <div class="container">
+    <div class="legal-content">
+      <div class="legal-updated">📅 Last updated: April 30, 2026</div>
+      <h1 class="legal-title">Terms of Service</h1>
+      <p class="legal-subtitle">Simple, plain-language terms. No legal traps.</p>
+
+      <div class="legal-block">
+        <h3>1. Acceptance</h3>
+        <p>By downloading or using FocusRank, you agree to these Terms. If you disagree, please uninstall the app. We may update these terms from time to time — continued use after changes constitutes acceptance.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>2. Use of the App</h3>
+        <p>FocusRank is a personal productivity tool. You agree to use it only for lawful personal purposes. You must not attempt to reverse-engineer, decompile, or exploit any part of the application.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>3. User Accounts</h3>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account. Notify us immediately if you suspect unauthorized access.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>4. App Usage Tracking Permission</h3>
+        <p>FocusRank requires the <code>PACKAGE_USAGE_STATS</code> Android permission to provide its core habit-scoring feature. Granting this permission is optional — you may use the Pomodoro timer and meditation features without it. Usage data collected under this permission is processed as described in our Privacy Policy.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>5. Intellectual Property</h3>
+        <p>All content, design, code, and trademarks within FocusRank are the property of KhanhRomVN. The app is provided for personal use only. You may not redistribute, modify, or commercially exploit any part of FocusRank without written permission.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>6. Leaderboards & Community</h3>
+        <p>Community rankings are based on self-reported activity within the app. Manipulation of scores, automated submissions, or any form of cheating will result in account suspension. We reserve the right to adjust rankings and scores at our discretion.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>7. Disclaimer & Limitation of Liability</h3>
+        <p>FocusRank is provided "as is" without warranty of any kind. We are not liable for any indirect, incidental, or consequential damages arising from your use of the service. The app is a productivity aid — results depend entirely on your personal effort and commitment.</p>
+      </div>
+
+      <div class="legal-block">
+        <h3>8. Contact</h3>
+        <p>For terms-related inquiries, contact <strong>KhanhRomVN</strong> at <a href="mailto:khanhromvn@gmail.com" style="color:var(--accent)">khanhromvn@gmail.com</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REPORT ═══ -->
+<div id="report">
+  <div class="container">
+    <div class="report-inner">
+      <div class="section-label" style="margin-bottom:12px">Feedback</div>
+      <h2 class="section-title" style="margin-bottom:8px">Report a Bug</h2>
+      <p class="section-desc" style="margin-bottom:40px">Found something broken? We read every report and usually respond within 24–48 hours.</p>
+
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <div class="form-cats">
+          <span class="form-cat active" onclick="selectCat(this)">🐛 Bug</span>
+          <span class="form-cat" onclick="selectCat(this)">💥 Crash</span>
+          <span class="form-cat" onclick="selectCat(this)">🎨 UI/UX</span>
+          <span class="form-cat" onclick="selectCat(this)">⚡ Performance</span>
+          <span class="form-cat" onclick="selectCat(this)">💡 Suggestion</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Describe the problem</label>
+        <textarea class="form-textarea" placeholder="What happened? What did you expect to happen instead?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Steps to reproduce</label>
+        <textarea class="form-textarea" style="min-height:80px" placeholder="1. Open the app&#10;2. Navigate to...&#10;3. Tap on..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your email (optional)</label>
+        <input type="email" class="form-input" placeholder="for follow-up replies">
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:12px 14px;margin-bottom:20px;font-size:12px;color:var(--text3);font-family:var(--font-mono)">
+        Reports sent to: khanhromvn@gmail.com · Response within 24–48h
+      </div>
+
+      <button class="form-submit" onclick="submitReport()">Send Report →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo" onclick="handleLinkClick(event, '/', 'main')">
+          <div class="logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          FocusRank
+        </a>
+        <p>Build better focus habits, meditate smarter, and rise the community ranks — one session at a time.</p>
+        <div class="footer-brand-links">
+          <a href="https://github.com/khanhromvn" class="social-link" title="GitHub">⚫</a>
+          <a href="mailto:khanhromvn@gmail.com" class="social-link" title="Email">✉</a>
+          <a href="#" class="social-link" title="Discord">💬</a>
+          <a href="#" class="social-link" title="TikTok">🎵</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Product</div>
+        <div class="footer-links">
+          <a href="/#features" onclick="handleLinkClick(event, '/#features', 'main')">Features</a>
+          <a href="/#how" onclick="handleLinkClick(event, '/#how', 'main')">How it works</a>
+          <a href="/#scoring" onclick="handleLinkClick(event, '/#scoring', 'main')">Scoring System</a>
+          <a href="/#sounds" onclick="handleLinkClick(event, '/#sounds', 'main')">Sound Mixer</a>
+          <a href="/#download" onclick="handleLinkClick(event, '/#download', 'main')">Download</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <div class="footer-links">
+          <a href="/privacy" onclick="handleLinkClick(event, '/privacy', 'privacy')">Privacy Policy</a>
+          <a href="/terms" onclick="handleLinkClick(event, '/terms', 'terms')">Terms of Service</a>
+          <a href="/report" onclick="handleLinkClick(event, '/report', 'report')">Report a Bug</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Developer</div>
+        <div class="footer-links">
+          <a href="https://github.com/khanhromvn">GitHub</a>
+          <a href="mailto:khanhromvn@gmail.com">khanhromvn@gmail.com</a>
+          <a href="#">Discord Community</a>
+          <a href="#">Buy Me a Coffee ☕</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        © 2026 FocusRank · Made with ❤️ by <a href="https://github.com/khanhromvn">KhanhRomVN</a> · Free forever
+      </div>
+      <div class="footer-legal-links">
+        <a href="/privacy" onclick="handleLinkClick(event, '/privacy', 'privacy')">Privacy</a>
+        <a href="/terms" onclick="handleLinkClick(event, '/terms', 'terms')">Terms</a>
+        <a href="mailto:khanhromvn@gmail.com">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<script>
+  // ── THEME ──
+  const html = document.documentElement;
+  const themeIcon = document.getElementById('theme-icon');
+
+  function toggleTheme() {
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    themeIcon.textContent = next === 'dark' ? '☀' : '🌙';
+    localStorage.setItem('fr-theme', next);
+  }
+
+  (function() {
+    const saved = localStorage.getItem('fr-theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    themeIcon.textContent = saved === 'dark' ? '☀' : '🌙';
+  })();
+
+  // ── NAV SCROLL ──
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('main-nav');
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+    document.getElementById('backTop').classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // ── ROUTING ──
+  const routes = {
+    '/': 'main',
+    '/privacy': 'privacy',
+    '/terms': 'terms',
+    '/report': 'report'
+  };
+
+  function showSection(id, push = true, path = null) {
+    document.getElementById('main-content').style.display = 'none';
+    document.querySelectorAll('.legal-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('report').style.display = 'none';
+
+    if (id === 'main') {
+      document.getElementById('main-content').style.display = 'block';
+    } else if (id === 'privacy' || id === 'terms') {
+      document.getElementById(id).classList.add('active');
+    } else if (id === 'report') {
+      document.getElementById('report').style.display = 'block';
+    }
+
+    if (push && path) {
+      window.history.pushState({ sectionId: id }, '', path);
+    }
+    
+    // Scroll handling
+    if (path && path.includes('#')) {
+      const hash = path.split('#')[1];
+      const el = document.getElementById(hash);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 10);
+      }
+    } else {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+  }
+
+  function handleLinkClick(e, path, sectionId) {
+    if (path.startsWith('http')) return;
+    e.preventDefault();
+    showSection(sectionId, true, path);
+  }
+
+  window.onpopstate = (event) => {
+    const path = window.location.pathname;
+    const sectionId = routes[path] || 'main';
+    showSection(sectionId, false);
+  };
+
+  // Initial load
+  (function() {
+    const path = window.location.pathname;
+    const sectionId = routes[path] || 'main';
+    // Use timeout to ensure DOM is fully ready for potential anchor scrolling
+    setTimeout(() => {
+      showSection(sectionId, false);
+      if (window.location.hash) {
+        const el = document.querySelector(window.location.hash);
+        if (el) el.scrollIntoView();
+      }
+    }, 0);
+  })();
+
+  // ── LEGACY WRAPPERS (for any missed calls) ──
+  function showMain() { showSection('main', true, '/'); }
+
+  // ── HOW IT WORKS STEPS ──
+  function setStep(el, idx) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    for (let i = 0; i < 4; i++) {
+      const d = document.getElementById('how-display-' + i);
+      if (d) d.style.display = i === idx ? 'flex' : 'none';
+    }
+  }
+
+  // ── VOLUME SLIDERS ──
+  function updateVol(input) {
+    const pct = input.nextElementSibling;
+    if (pct) pct.textContent = input.value + '%';
+  }
+
+  // ── FORM CATEGORIES ──
+  function selectCat(el) {
+    el.closest('.form-cats').querySelectorAll('.form-cat').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── SUBMIT REPORT ──
+  function submitReport() {
+    showToast('Report sent! We\'ll get back to you soon 🙏');
+    document.querySelectorAll('.form-textarea, .form-input').forEach(i => i.value = '');
+    document.querySelectorAll('.form-cat').forEach((c, i) => {
+      c.classList.toggle('active', i === 0);
+    });
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ── FADE UP ANIMATIONS ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── TIMER ANIMATION ──
+  let dashOffset = 110;
+  let direction = 1;
+  setInterval(() => {
+    const ring = document.querySelector('.timer-prog');
+    if (!ring) return;
+    dashOffset += direction * 1.5;
+    if (dashOffset >= 430) direction = -1;
+    if (dashOffset <= 10) direction = 1;
+    ring.style.strokeDashoffset = dashOffset;
+  }, 40);
+
+  // ── HOW-DISPLAY FLEX ──
+  document.getElementById('how-display-0').style.display = 'flex';
+</script>
+</body>
+</html>
